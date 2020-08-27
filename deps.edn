@@ -1,0 +1,34 @@
+{:paths
+ ["src" "resources"]
+
+ :deps
+ {org.clojure/clojure {:mvn/version "1.10.1"}}
+
+ :aliases
+ {:metabase-src
+  {:extra-deps
+   {metabase/metabase {:local/root "../metabase-latest"
+                       :deps/manifest :deps}}}
+
+  :metabase-jar
+  {:extra-deps
+   {metabase/metabase {:local/root 
+                       "../metabase-latest/target/uberjar/metabase.jar"}}}
+
+  :datomic-client
+  {:extra-deps
+   {com.datomic/client-pro {:mvn/version "0.9.63"}}}
+
+  :datomic-local
+  {:extra-deps
+   {com.datomic/dev-local {:mvn/version "0.9.183"}}}
+
+  :test
+  {:extra-paths ["test"]
+
+   :extra-deps
+   {lambdaisland/kaocha        {:mvn/version "0.0-418"}
+    nubank/matcher-combinators {:mvn/version "0.9.0"}}}}
+
+ :mvn/repos
+ {"my.datomic.com" {:url "https://my.datomic.com/repo"}}}
