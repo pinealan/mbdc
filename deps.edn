@@ -23,6 +23,9 @@
   {:extra-deps
    {com.datomic/dev-local {:mvn/version "0.9.183"}}}
 
+  :dev
+  {:extra-paths ["dev"]}
+
   :test
   {:extra-paths ["test"]
 

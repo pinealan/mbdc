@@ -1,1 +1,1 @@
-clj -A:metabase-jar:datomic-client:icedd
+clj -A:metabase-jar:datomic-client:dev:icedd
