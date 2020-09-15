@@ -1,7 +1,11 @@
 (ns metabase.driver.datomic-client
   (:require [datomic.client.api :as dc]
+            [datomic.client.api.async :as ds]
+            [clojure.core.async :as a :refer [<! >! <!! >!! go close!]]
             [metabase.driver :as driver]
-            [metabase.query-processor.store :as qp.store]))
+            [metabase.query-processor
+             [reducible :as qp.reducible]
+             [store :as qp.store]]))
 
 (driver/register! :datomic-client)
 
@@ -177,20 +181,38 @@
 
 (defmethod driver/mbql->native :datomic-client
   [_ {mbqry :query settings :settings}]
-  "")
+  {:query "some query"})
 
 (defmethod driver/execute-reducible-query :datomic-client
-  [_ native-query]
-  {})
+  [_ query context respond]
+  (println (:native-query query))
+  (respond
+   {:cols [{:name "my_col"}]}
+   (qp.reducible/reducible-rows (fn [& args] [1 "123"])
+                                (:canceled-chan context))))
 
 (comment
+  (def lynx-spec
+    {:endpoint "lynx.local:8998"
+     :access-key "myaccesskey"
+     :secret "mysecret"
+     :db-name "m13n"})
+
   (def raven-spec
     {:endpoint "localhost:8998"
      :access-key "k"
      :secret "s"
      :db-name "m13n"})
 
-  (driver/can-connect? :datomic-client raven-spec)
+  (require '[metabase.driver.datomic-client-test :refer [test-db-spec]])
+  (def local-spec test-db-spec)
+
+  (driver/can-connect? :datomic-client test-db-spec)
+
+  (let [c (ds/q {:query schema-attrs-q
+                 :args [(latest-db local-spec)]})]
+    (prn (<!! c))
+    (<!! c))
 
   (->> raven-spec
        (latest-db)
@@ -208,5 +230,4 @@
   (driver/describe-table
    :datomic-client
    {:details raven-spec}
-   {:name "txn"}))
-
+   {:name "operator"}))
